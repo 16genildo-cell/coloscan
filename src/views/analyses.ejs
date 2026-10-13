@@ -1,0 +1,35 @@
+<%- include('partials/head') %>
+<p class="muted"><%= count %> resultado(s). Apenas texto: as imagens não são guardadas no servidor.</p>
+<div class="card table-wrap">
+<% if (!items.length) { %><p class="muted">Nenhuma análise ainda.</p><% } else { %>
+<table>
+  <thead><tr><th>Data</th><th>Dispositivo</th><th>Estado</th><th>Características</th><th>Modelo</th><th>Expira</th><th></th></tr></thead>
+  <tbody>
+  <% items.forEach(function (a) { %>
+    <tr>
+      <td><%= a.createdAt.toLocaleString('pt-BR') %></td>
+      <td><code><%= String(a.device).slice(-6) %></code></td>
+      <td><span class="tag tag-<%= a.status %>"><%= a.status === 'completed' ? 'concluída' : a.status === 'inconclusive' ? 'inconclusiva' : a.status %></span></td>
+      <td><%= a.features.map(function (f) { return f.code; }).join(', ') || '—' %></td>
+      <td><%= a.modelVersion || '—' %></td>
+      <td><%= a.expiresAt ? a.expiresAt.toLocaleDateString('pt-BR') : '—' %></td>
+      <td>
+        <form method="post" action="/admin/analyses/<%= a._id %>/delete">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-danger btn-sm" type="submit">Excluir</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+<% } %>
+</div>
+<% if (pages > 1) { %>
+<nav class="pager">
+  <% if (page > 1) { %><a class="btn" href="?page=<%= page - 1 %>">Anterior</a><% } %>
+  <span>Página <%= page %> de <%= pages %></span>
+  <% if (page < pages) { %><a class="btn" href="?page=<%= page + 1 %>">Próxima</a><% } %>
+</nav>
+<% } %>
+<%- include('partials/foot') %>

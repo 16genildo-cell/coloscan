@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar · ColoScan Admin</title>
+  <link rel="icon" href="/public/img/favicon.png">
+  <link rel="stylesheet" href="/public/css/admin.css">
+</head>
+<body class="login-page">
+  <form class="card login-card" method="post" action="/admin/login">
+    <img src="/public/img/logo.png" alt="Logotipo do ColoScan" width="72" height="72">
+    <h1>ColoScan <span>Admin</span></h1>
+    <% if (error) { %><div class="alert alert-error" role="alert"><%= error %></div><% } %>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>E-mail<input type="email" name="email" value="<%= email %>" required autocomplete="username" autofocus></label>
+    <label>Senha<input type="password" name="password" required autocomplete="current-password"></label>
+    <button class="btn btn-primary" type="submit">Entrar</button>
+  </form>
+</body>
+</html>

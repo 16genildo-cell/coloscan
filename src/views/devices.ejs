@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<p class="muted">Cada instalação do app recebe um token anônimo. Revogar apaga o dispositivo e as análises dele; o app registra um novo token na próxima análise.</p>
+<div class="card table-wrap">
+<% if (!items.length) { %><p class="muted">Nenhum dispositivo registrado.</p><% } else { %>
+<table>
+  <thead><tr><th>ID</th><th>Plataforma</th><th>Versão do app</th><th>Registrado</th><th>Visto por último</th><th>Análises</th><th></th></tr></thead>
+  <tbody>
+  <% items.forEach(function (d) { %>
+    <tr>
+      <td><code><%= String(d._id).slice(-6) %></code></td>
+      <td><%= d.platform %></td>
+      <td><%= d.appVersion || '—' %></td>
+      <td><%= d.createdAt.toLocaleString('pt-BR') %></td>
+      <td><%= d.lastSeenAt ? d.lastSeenAt.toLocaleString('pt-BR') : '—' %></td>
+      <td><%= byDevice[String(d._id)] || 0 %></td>
+      <td>
+        <form method="post" action="/admin/devices/<%= d._id %>/delete">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-danger btn-sm" type="submit">Revogar</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+<% } %>
+</div>
+<%- include('partials/foot') %>

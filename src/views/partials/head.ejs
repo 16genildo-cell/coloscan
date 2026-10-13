@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · ColoScan Admin</title>
+  <link rel="icon" href="/public/img/favicon.png">
+  <link rel="stylesheet" href="/public/css/admin.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="/admin"><img src="/public/img/logo.png" alt="" width="36" height="36"><span>Colo<b>Scan</b></span></a>
+    <nav>
+      <a href="/admin" class="<%= path === '/' ? 'active' : '' %>">Painel</a>
+      <a href="/admin/settings" class="<%= path.startsWith('/settings') ? 'active' : '' %>">Configurações de IA</a>
+      <a href="/admin/analyses" class="<%= path.startsWith('/analyses') ? 'active' : '' %>">Análises</a>
+      <a href="/admin/devices" class="<%= path.startsWith('/devices') ? 'active' : '' %>">Dispositivos</a>
+      <a href="/admin/account" class="<%= path.startsWith('/account') ? 'active' : '' %>">Conta</a>
+    </nav>
+    <form method="post" action="/admin/logout" class="logout">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <span class="who"><%= adminEmail %></span>
+      <button type="submit" class="btn btn-ghost">Sair</button>
+    </form>
+  </aside>
+  <main class="content">
+    <h1><%= title %></h1>
+    <% if (flash) { %><div class="alert alert-<%= flash.type %>" role="status"><%= flash.text %></div><% } %>

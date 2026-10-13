@@ -1,0 +1,30 @@
+<%- include('partials/head') %>
+<div class="grid-2">
+  <form method="post" action="/admin/account/password" class="card stack">
+    <h2>Alterar minha senha</h2>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Senha atual<input type="password" name="current" required autocomplete="current-password"></label>
+    <label>Nova senha (mín. 10 caracteres)<input type="password" name="password" required minlength="10" autocomplete="new-password"></label>
+    <label>Confirmar nova senha<input type="password" name="confirm" required minlength="10" autocomplete="new-password"></label>
+    <button class="btn btn-primary" type="submit">Alterar senha</button>
+  </form>
+  <form method="post" action="/admin/account/admins" class="card stack">
+    <h2>Adicionar administrador</h2>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>E-mail<input type="email" name="email" required></label>
+    <label>Senha inicial (mín. 10 caracteres)<input type="password" name="password" required minlength="10" autocomplete="new-password"></label>
+    <button class="btn" type="submit">Adicionar</button>
+  </form>
+</div>
+<section class="card">
+  <h2>Administradores</h2>
+  <table>
+    <thead><tr><th>E-mail</th><th>Criado</th><th>Último acesso</th></tr></thead>
+    <tbody>
+    <% admins.forEach(function (a) { %>
+      <tr><td><%= a.email %></td><td><%= a.createdAt.toLocaleString('pt-BR') %></td><td><%= a.lastLoginAt ? a.lastLoginAt.toLocaleString('pt-BR') : '—' %></td></tr>
+    <% }) %>
+    </tbody>
+  </table>
+</section>
+<%- include('partials/foot') %>

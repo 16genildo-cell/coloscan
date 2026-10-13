@@ -1,0 +1,48 @@
+<%- include('partials/head') %>
+<section class="grid">
+  <div class="card status <%= ready ? 'ok' : 'warn' %>">
+    <h2>Análise por IA</h2>
+    <p class="big"><%= ready ? 'Ativa' : 'Inativa' %></p>
+    <p class="muted">
+      Provedor: <b><%= providerLabel %></b>
+      <% if (settings.provider !== 'none') { %>· Modelo: <b><%= settings.model || 'padrão' %></b><% } %>
+    </p>
+    <% if (!ready) { %>
+      <p class="muted">
+        <% if (settings.provider === 'none') { %>Escolha um provedor.
+        <% } else if (!hasKey) { %>Cadastre a chave de API do provedor.
+        <% } else if (!settings.analysisEnabled) { %>Ative a análise nas configurações.
+        <% } else { %>Não foi possível ler a chave salva: cadastre-a novamente.<% } %>
+      </p>
+      <p class="muted">Enquanto estiver inativa, o app recebe "serviço indisponível".</p>
+    <% } %>
+    <a class="btn btn-primary" href="/admin/settings">Configurar</a>
+  </div>
+  <div class="card"><h2>Dispositivos</h2><p class="big"><%= stats.devices %></p><p class="muted">instalações registradas</p></div>
+  <div class="card"><h2>Análises (7 dias)</h2><p class="big"><%= stats.week %></p><p class="muted"><%= stats.inconclusiveWeek %> inconclusivas · <%= stats.total %> no total</p></div>
+</section>
+
+<% if (lastError) { %>
+  <div class="alert alert-error">Último erro do provedor (<%= lastError.at.toLocaleString('pt-BR') %>): <%= lastError.message %></div>
+<% } %>
+
+<section class="card">
+  <h2>Endereço para o app</h2>
+  <p>No app, abra <b>Perfil › Servidor de análise</b> e informe o endereço desta API, por exemplo
+    <code>https://seu-dominio.com.br</code> (ou <code>http://IP-DO-COMPUTADOR:PORTA</code> apenas para testes na rede local).</p>
+</section>
+
+<section class="card">
+  <h2>Últimas ações administrativas</h2>
+  <% if (!audit.length) { %><p class="muted">Nenhuma ação registrada.</p><% } else { %>
+  <table>
+    <thead><tr><th>Quando</th><th>Quem</th><th>Ação</th><th>Detalhe</th></tr></thead>
+    <tbody>
+    <% audit.forEach(function (a) { %>
+      <tr><td><%= a.createdAt.toLocaleString('pt-BR') %></td><td><%= a.admin %></td><td><%= a.action %></td><td><%= a.detail %></td></tr>
+    <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+</section>
+<%- include('partials/foot') %>

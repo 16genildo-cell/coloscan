@@ -1,0 +1,67 @@
+<%- include('partials/head') %>
+<form method="post" action="/admin/settings" class="stack" autocomplete="off">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <section class="card stack">
+    <h2>Provedor de IA</h2>
+    <label class="check"><input type="checkbox" name="analysisEnabled" <%= s.analysisEnabled ? 'checked' : '' %>> Análise por IA ativada</label>
+    <label>Provedor
+      <select name="provider">
+        <option value="none" <%= s.provider === 'none' ? 'selected' : '' %>>Nenhum</option>
+        <% Object.entries(providers).forEach(function ([key, p]) { %>
+          <option value="<%= key %>" <%= s.provider === key ? 'selected' : '' %>><%= p.label %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label>Modelo
+      <input type="text" name="model" value="<%= s.model %>" placeholder="vazio = padrão do provedor">
+      <small>Padrões sugeridos:
+        <% Object.entries(providers).forEach(function ([key, p], i) { %><%= i ? ' · ' : '' %><%= p.label %>: <code><%= p.defaultModel %></code><% }) %>.
+        Confira os modelos disponíveis na sua conta do provedor.</small>
+    </label>
+  </section>
+
+  <section class="card stack">
+    <h2>Chaves de API</h2>
+    <p class="muted">As chaves são guardadas criptografadas (AES-256-GCM) e nunca são exibidas novamente.
+      Deixe o campo vazio para manter a chave atual.</p>
+    <% Object.entries(providers).forEach(function ([key, p]) { %>
+      <div class="keyrow">
+        <label><%= p.label %>
+          <input type="password" name="apiKey_<%= key %>" placeholder="<%= s.apiKeyHints[key] ? 'Chave salva: ' + s.apiKeyHints[key] : 'Nenhuma chave salva' %>" autocomplete="new-password">
+        </label>
+        <% if (s.apiKeyHints[key]) { %><label class="check small"><input type="checkbox" name="removeKey_<%= key %>"> remover chave</label><% } %>
+      </div>
+    <% }) %>
+  </section>
+
+  <section class="card stack">
+    <h2>Instruções enviadas à IA (prompt)</h2>
+    <p class="muted">A resposta da IA é sempre validada pelo servidor: só são aceitos os códigos abaixo, e textos com
+      diagnóstico, menção a câncer ou porcentagens são substituídos por uma mensagem neutra.</p>
+    <textarea name="systemPrompt" rows="16"><%= s.systemPrompt %></textarea>
+    <label class="check small"><input type="checkbox" name="resetPrompt"> restaurar o prompt padrão ao salvar</label>
+    <details><summary>Códigos de características aceitos</summary>
+      <ul class="codes"><% featureCodes.forEach(function ([code, label]) { %><li><code><%= code %></code> — <%= label %></li><% }) %></ul>
+    </details>
+  </section>
+
+  <section class="card grid-2">
+    <h2 class="span-2">Limites e privacidade</h2>
+    <label>Tamanho máximo da imagem (MB)<input type="number" name="maxImageMb" min="1" max="15" value="<%= s.maxImageMb %>"></label>
+    <label>Análises por dispositivo por hora<input type="number" name="analysesPerDevicePerHour" min="1" max="500" value="<%= s.analysesPerDevicePerHour %>"></label>
+    <label>Guardar resultados por (dias)<input type="number" name="retentionDays" min="1" max="3650" value="<%= s.retentionDays %>">
+      <small>Depois disso são apagados automaticamente. Imagens nunca são guardadas.</small></label>
+    <label>Tempo máximo da IA (segundos)<input type="number" name="requestTimeoutSec" min="10" max="180" value="<%= s.requestTimeoutSec %>"></label>
+    <label>Versão do termo de consentimento<input type="text" name="consentVersion" value="<%= s.consentVersion %>"></label>
+  </section>
+
+  <div class="actions"><button class="btn btn-primary" type="submit">Salvar configurações</button></div>
+</form>
+
+<form method="post" action="/admin/settings/test" class="card inline">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div><h2>Testar conexão</h2><p class="muted">Envia uma mensagem curta ao provedor salvo para verificar chave e modelo (sem imagem).</p></div>
+  <button class="btn" type="submit">Testar agora</button>
+</form>
+<%- include('partials/foot') %>
