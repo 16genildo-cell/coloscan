@@ -2,9 +2,10 @@
 
 class ProviderError extends Error {
   /** @param {'auth'|'rate'|'unavailable'|'bad_response'|'config'} kind */
-  constructor(kind, message) {
+  constructor(kind, message, { timedOut = false } = {}) {
     super(message);
     this.kind = kind;
+    this.timedOut = timedOut;
   }
 }
 
@@ -24,7 +25,8 @@ async function postJson(url, { headers, body, timeoutMs }) {
       signal: AbortSignal.timeout(timeoutMs),
     });
   } catch (e) {
-    throw new ProviderError('unavailable', e.name === 'TimeoutError' ? 'tempo esgotado' : 'falha de rede');
+    const timedOut = e.name === 'TimeoutError';
+    throw new ProviderError('unavailable', timedOut ? 'tempo esgotado' : 'falha de rede', { timedOut });
   }
   let json = null;
   try {

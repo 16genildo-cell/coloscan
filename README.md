@@ -39,6 +39,17 @@ npm test           # testes automatizados (precisa de MongoDB em 127.0.0.1:27017
 2. **Configurações de IA**: escolha o provedor, informe o modelo (ou deixe o padrão), cole a chave de API e marque **Análise por IA ativada**.
 3. Clique em **Testar agora** para validar a chave e o modelo.
 
+### Como a análise por IA funciona
+
+- **Saída estruturada:** o servidor envia um schema JSON (ferramenta forçada na Anthropic, `json_schema` estrito na OpenAI, `responseSchema` no Gemini). Se o modelo escolhido não aceitar, o servidor repete sem schema e lembra disso até reiniciar.
+- **Critérios visuais:** cada análise leva os critérios de cada código (`services/analysisPrompt.js`) e pede uma avaliação da qualidade da foto antes da descrição. Os critérios vão na instrução da análise, então valem mesmo com um prompt personalizado salvo.
+- **Qualidade da foto:** problemas como foto escura, desfocada ou com reflexo viram orientações padronizadas ao usuário; "não parece fezes" sempre resulta em inconclusivo.
+- **Certeza:** a IA marca cada característica como evidente ou possível; as possíveis são registradas com o aviso de que a imagem não permite certeza (sinais de atenção nunca são omitidos por dúvida).
+- **Consistência:** só uma cor predominante e uma consistência são mantidas; sangue, cor muito escura, cor muito clara e muco aparecem primeiro.
+- **Nova tentativa:** uma repetição em resposta inválida, limite do provedor ou falha temporária, dentro do tempo limite do painel. Chave inválida e tempo esgotado não são repetidos.
+
+> Instalações antigas têm o prompt anterior salvo no banco. Para usar o novo, use a opção de restaurar o prompt padrão em **Configurações de IA**.
+
 ## Conectar o app
 
 No app: **Perfil › Servidor de análise** → informe o endereço da API e toque em **Testar e salvar**.

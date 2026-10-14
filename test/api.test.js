@@ -92,7 +92,8 @@ test('análise completa segue o contrato e filtra linguagem/códigos', async () 
   assert.equal(b.clinically_validated, false);
   assert.equal(b.recommend_medical_evaluation, false);
   assert.equal(b.model_version, 'anthropic:modelo-teste');
-  assert.deepEqual(b.features.map((f) => f.code), ['predominant_color_brown', 'visible_blood']);
+  // Sinais de atenção vêm primeiro; código inventado é descartado.
+  assert.deepEqual(b.features.map((f) => f.code), ['visible_blood', 'predominant_color_brown']);
   assert.ok(!JSON.stringify(b).includes('câncer'), 'texto diagnóstico deve ser removido');
   assert.ok(b.limitations.length > 0);
   // Imagem não é salva: o documento só tem texto.
